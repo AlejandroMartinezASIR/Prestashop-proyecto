@@ -25,7 +25,7 @@
 
     - name: Descargar PrestaShop
       get_url:
-        url: https://www.prestashop.com/download/latest
+        url: https://assets.prestashop3.com/dst/edition/corporate/8.2.0/prestashop_edition_classic_version_8.2.0.zip
         dest: /tmp/prestashop.zip
         mode: '0644'
 
@@ -61,26 +61,7 @@
         owner: www-data
         group: www-data
         recurse: yes
-
-    - name: Crear archivo de configuración de PrestaShop
-      command:
-        php /var/www/html/install/index_cli.php \
-        --domain="{{ cerbot.url }}" \
-        --db_server="{{ ip.back }}" \
-        --db_name="{{ db.name }}" \
-        --db_user="{{ db.user }}" \
-        --db_password="{{ db.pass }}" \
-        --email="{{ cerbot.email }}" \
-        --password="{{ prestashop.admin_password }}" \
-        --language=es \
-        --country=es \
-        --newsletter=0
-
-    - name: Eliminar directorio de instalación
-      file:
-        path: /var/www/html/install
-        state: absent
-
+    
     - name: Configurar permisos finales de PrestaShop
       file:
         path: /var/www/html

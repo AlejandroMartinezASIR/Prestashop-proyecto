@@ -1,9 +1,9 @@
-##---
-#- import_playbook: playbooks/install_lamp_backend.yaml
-#- import_playbook: playbooks/install_lamp_frontend.yaml
-#- import_playbook: playbooks/setup_load_balancer.yaml
-#- import_playbook: playbooks/setup_nfs_server.yaml
-#- import_playbook: playbooks/setup_nfs_client.yaml
-#- import_playbook: playbooks/setup_letsencrypt_certificate.yaml
-#- import_playbook: playbooks/deploy_prestashop_backend.yaml
+---
+- import_playbook: playbooks/install_lamp_backend.yaml
+- import_playbook: playbooks/install_lamp_frontend.yaml
+- import_playbook: playbooks/setup_load_balancer.yaml
+- import_playbook: playbooks/setup_nfs_server.yaml
+- import_playbook: playbooks/setup_nfs_client.yaml
+- import_playbook: playbooks/setup_letsencrypt_certificate.yaml
+- import_playbook: playbooks/deploy_prestashop_backend.yaml
 - import_playbook: playbooks/deploy_prestashop_frontend.yaml
