@@ -1,0 +1,56 @@
+---
+- name: Configurar proxy inverso con Nginx
+  hosts: loadbalancer
+  become: yes
+  vars_files:
+    - ../vars/variables.yaml
+
+  tasks:
+    - name: Actualizar el repositorio de paquetes
+      apt:
+        update_cache: yes
+
+    - name: Actualizar los paquetes instalados
+      apt:
+        upgrade: dist
+        autoremove: yes
+
+    - name: Instalar Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Eliminar el virtualhost por defecto de Nginx si existe
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Copiar configuración del balanceador de carga
+      copy:
+        src: ../templates/load-balancer.conf
+        dest: /etc/nginx/sites-available/load-balancer.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Configurar direcciones IP en la configuración de Nginx
+      replace:
+        path: /etc/nginx/sites-available/load-balancer.conf
+        regexp: "{{ item.regex }}"
+        replace: "{{ item.value }}"
+      loop:
+        - { regex: 'IP_FRONTEND_1', value: '{{ ip.front1 }}' }
+        - { regex: 'IP_FRONTEND_2', value: '{{ ip.front2 }}' }
+        - { regex: 'LE_DOMAIN', value: '{{ cerbot.url }}' }
+
+    - name: Habilitar el virtualhost del balanceador de carga si no existe
+      file:
+        src: /etc/nginx/sites-available/load-balancer.conf
+        dest: /etc/nginx/sites-enabled/load-balancer.conf
+        state: link
+
+    - name: Reiniciar Nginx para aplicar los cambios
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes

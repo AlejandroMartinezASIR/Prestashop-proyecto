@@ -1,0 +1,49 @@
+---
+- name: Configurar servidor NFS
+  hosts: nfs_server
+  become: yes
+  vars_files:
+    - ../vars/variables.yaml
+
+  tasks:
+    - name: Actualizar el repositorio de paquetes
+      apt:
+        update_cache: yes
+
+    - name: Actualizar paquetes del sistema
+      apt:
+        upgrade: dist
+        autoremove: yes
+
+    - name: Instalar el servidor NFS
+      apt:
+        name: nfs-kernel-server
+        state: present
+
+    - name: Crear el directorio compartido
+      file:
+        path: /var/www/html
+        state: directory
+        owner: nobody
+        group: nogroup
+        mode: '0775'
+
+    - name: Copiar configuración de exportación NFS
+      copy:
+        src: ../nfs/exports
+        dest: /etc/exports
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Configurar la red de exportación en /etc/exports
+      replace:
+        path: /etc/exports
+        regexp: 'FRONTEND_NETWORK'
+        replace: "{{ ip.net }}"
+
+    - name: Reiniciar el servicio NFS
+      systemd:
+        name: nfs-kernel-server
+        state: restarted
+        enabled: yes

@@ -1,0 +1,19 @@
+cerbot:
+  email: ofthedesertgod@gmail.com
+  url: godofthedesert.ddnsking.com
+
+db:
+  user: alex
+  pass: 1234
+  name: prestashop
+
+ip:
+  front1: "172.31.27.174"
+  front2: "172.31.18.104"
+  back: "172.31.16.185"
+  net: "172.31.0.0/16"
+  nfsserver: "172.31.26.4"
+
+prestashop:
+  admin_password: "Usuario0?"  
+        

@@ -1,0 +1,13 @@
+# BEGIN Prestashop
+# Las directivas (líneas) entre «BEGIN Prestashop» y «END Prestashop» son
+# generadas dinámicamente y solo deberían ser modificadas mediante filtros de Prestashop.
+# Cualquier cambio en las directivas que hay entre esos marcadores serán sobrescritas.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>

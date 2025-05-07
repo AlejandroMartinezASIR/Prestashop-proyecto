@@ -1,0 +1,29 @@
+---
+- name: Playbook para configurar HTTPS
+  hosts: loadbalancer
+  become: yes
+
+  vars_files:
+    - ../vars/variables.yaml
+
+  tasks:
+
+    - name: Desinstalar instalaciones previas de Certbot
+      apt:
+        name: certbot
+        state: absent
+
+    - name: Instalar Certbot con snap
+      snap:
+        name: certbot
+        classic: yes
+        state: present
+
+    - name: Solicitar y configurar certificado SSL/TLS a Let's Encrypt con certbot
+      command:
+        certbot --nginx \
+        -m {{ cerbot.email }} \
+        --agree-tos \
+        --no-eff-email \
+        --non-interactive \
+        -d {{ cerbot.url }}

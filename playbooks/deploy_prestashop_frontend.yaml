@@ -1,0 +1,89 @@
+---
+- name: Deploy PrestaShop front
+  hosts: frontend_master
+  become: yes
+  vars_files:
+    - ../vars/variables.yaml
+
+  tasks:
+    - name: Instalar dependencias necesarias
+      apt:
+        name:
+          - php
+          - php-mysql
+          - php-xml
+          - php-curl
+          - php-gd
+          - php-mbstring
+          - php-zip
+          - unzip
+        state: present
+        update_cache: yes
+
+    - name: Eliminar instalaciones anteriores de PrestaShop
+      shell: rm -rf /var/www/html/*
+
+    - name: Descargar PrestaShop
+      get_url:
+        url: https://www.prestashop.com/download/latest
+        dest: /tmp/prestashop.zip
+        mode: '0644'
+
+    - name: Verificar que el archivo ZIP existe
+      stat:
+        path: /tmp/prestashop.zip
+      register: prestashop_zip
+
+    - name: Fallar si el archivo ZIP no se descargó correctamente
+      fail:
+        msg: "El archivo PrestaShop no se descargó correctamente."
+      when: not prestashop_zip.stat.exists
+
+    - name: Descomprimir PrestaShop
+      unarchive:
+        src: /tmp/prestashop.zip
+        dest: /var/www/html
+        remote_src: yes
+
+    - name: Mover archivos de instalación de PrestaShop
+      shell: mv /var/www/html/prestashop/* /var/www/html/
+      args:
+        creates: /var/www/html/index.php
+
+    - name: Eliminar archivos sobrantes de instalación
+      file:
+        path: /var/www/html/prestashop
+        state: absent
+
+    - name: Configurar permisos de PrestaShop
+      file:
+        path: /var/www/html
+        owner: www-data
+        group: www-data
+        recurse: yes
+
+    - name: Crear archivo de configuración de PrestaShop
+      command:
+        php /var/www/html/install/index_cli.php \
+        --domain="{{ cerbot.url }}" \
+        --db_server="{{ ip.back }}" \
+        --db_name="{{ db.name }}" \
+        --db_user="{{ db.user }}" \
+        --db_password="{{ db.pass }}" \
+        --email="{{ cerbot.email }}" \
+        --password="{{ prestashop.admin_password }}" \
+        --language=es \
+        --country=es \
+        --newsletter=0
+
+    - name: Eliminar directorio de instalación
+      file:
+        path: /var/www/html/install
+        state: absent
+
+    - name: Configurar permisos finales de PrestaShop
+      file:
+        path: /var/www/html
+        owner: www-data
+        group: www-data
+        recurse: yes

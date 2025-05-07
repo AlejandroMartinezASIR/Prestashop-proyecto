@@ -1,0 +1,20 @@
+[frontend]
+172.31.27.174
+172.31.18.104
+
+[frontend_master]
+172.31.27.174
+
+[backend]
+172.31.16.185
+
+[loadbalancer]
+172.31.17.62
+
+[nfs_server]
+172.31.26.4
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/ubuntu/Prestashop-proyecto/labsuser.pem
+ansible_ssh_common_args='-o StrictHostKeyChecking=accept-new'
