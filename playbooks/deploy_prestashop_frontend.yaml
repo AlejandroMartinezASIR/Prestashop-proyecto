@@ -61,7 +61,12 @@
         owner: www-data
         group: www-data
         recurse: yes
-    
+
+    - name: Eliminar directorio de instalación
+      file:
+        path: /var/www/html/install
+        state: absent
+
     - name: Configurar permisos finales de PrestaShop
       file:
         path: /var/www/html

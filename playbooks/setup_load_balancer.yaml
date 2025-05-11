@@ -39,15 +39,22 @@
         regexp: "{{ item.regex }}"
         replace: "{{ item.value }}"
       loop:
-        - { regex: 'IP_FRONTEND_1', value: '{{ ip.front1 }}' }
-        - { regex: 'IP_FRONTEND_2', value: '{{ ip.front2 }}' }
-        - { regex: 'LE_DOMAIN', value: '{{ cerbot.url }}' }
+        - { regex: 'IP_FRONTEND_1', value: '{{ ip.front1 | default("") }}' }
+        - { regex: 'IP_FRONTEND_2', value: '{{ ip.front2 | default("") }}' }
+        - { regex: 'LE_DOMAIN', value: '{{ cerbot.url | default("") }}' }
+      when: item.value != ""
 
     - name: Habilitar el virtualhost del balanceador de carga si no existe
       file:
         src: /etc/nginx/sites-available/load-balancer.conf
         dest: /etc/nginx/sites-enabled/load-balancer.conf
         state: link
+        force: yes
+
+    - name: Verificar la configuración de Nginx
+      command: nginx -t
+      register: nginx_test
+      failed_when: nginx_test.rc != 0
 
     - name: Reiniciar Nginx para aplicar los cambios
       systemd:
