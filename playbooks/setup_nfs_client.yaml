@@ -31,7 +31,7 @@
     - name: Montar el sistema de archivos NFS temporalmente
       command: mount {{ ip.nfsserver }}:/var/www/html /var/www/html
       args:
-        creates: /var/www/html/index.php  # Verifica que el montaje no se repita
+        creates: /var/www/html/index.php  
 
     - name: Crear copia de seguridad de /etc/fstab
       copy:

@@ -16,16 +16,23 @@
           - php-gd
           - php-mbstring
           - php-zip
+          - php-intl
+          - php-soap
           - unzip
         state: present
         update_cache: yes
 
-    - name: Eliminar instalaciones anteriores de PrestaShop
-      shell: rm -rf /var/www/html/*
+    - name: Crear el directorio de PrestaShop
+      file:
+        path: /var/www/html/
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
 
     - name: Descargar PrestaShop
       get_url:
-        url: https://assets.prestashop3.com/dst/edition/corporate/8.2.0/prestashop_edition_classic_version_8.2.0.zip
+        url: https://assets.prestashop3.com/dst/edition/corporate/8.2.1/prestashop_edition_classic_version_8.2.1.zip
         dest: /tmp/prestashop.zip
         mode: '0644'
 
@@ -45,31 +52,16 @@
         dest: /var/www/html
         remote_src: yes
 
-    - name: Mover archivos de instalación de PrestaShop
-      shell: mv /var/www/html/prestashop/* /var/www/html/
-      args:
-        creates: /var/www/html/index.php
-
-    - name: Eliminar archivos sobrantes de instalación
-      file:
-        path: /var/www/html/prestashop
-        state: absent
-
     - name: Configurar permisos de PrestaShop
       file:
         path: /var/www/html
         owner: www-data
         group: www-data
+        mode: '0755'
         recurse: yes
 
-    - name: Eliminar directorio de instalación
-      file:
-        path: /var/www/html/install
-        state: absent
-
-    - name: Configurar permisos finales de PrestaShop
-      file:
-        path: /var/www/html
-        owner: www-data
-        group: www-data
-        recurse: yes
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted

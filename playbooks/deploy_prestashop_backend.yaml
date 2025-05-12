@@ -1,12 +1,12 @@
 ---
-- name: Despliegue de backend de wordpress
+- name: Despliegue de backend de PrestaShop
   hosts: backend
   become: yes
   vars_files:
     - ../vars/variables.yaml
     
   tasks:
-    - name: Borrar la base de datos
+    - name: Borrar la base de datos si existe
       mysql_db:
         name: "{{ db.name }}"
         state: absent
@@ -23,17 +23,18 @@
         name: "{{ db.user }}"
         password: "{{ db.pass }}"
         priv: "{{ db.name }}.*:ALL"
-        host: "{{ ip.net }}" #Aquí usamos la red completa 172.31.0.0/16
+        host: "{{ ip.net }}" # Aquí usamos la red completa 172.31.0.0/16
         state: present
         login_unix_socket: /var/run/mysqld/mysqld.sock 
 
     - name: Configuramos MySQL para permitir conexiones desde cualquier interfaz
       replace:
         path: /etc/mysql/mysql.conf.d/mysqld.cnf
-        regexp: 127.0.0.1
-        replace: 0.0.0.0
+        regexp: '^bind-address\s*=\s*127\.0\.0\.1'
+        replace: 'bind-address = 0.0.0.0'
 
     - name: Reiniciamos el servicio de base de datos
       service:
         name: mysql
         state: restarted
+        enabled: yes
