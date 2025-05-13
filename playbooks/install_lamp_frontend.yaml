@@ -27,7 +27,7 @@
           - php-intl
           - php-memcached
           - php-mbstring
-          - php-dom
+          - php-xml
           - php-zip
           - php-cli
           - php-xmlrpc
@@ -80,11 +80,4 @@
         name: apache2
         state: restarted
 
-    - name: Insertar configuración personalizada en defines.inc.php de PrestaShop
-      blockinfile:
-        path: /var/www/html/config/defines.inc.php
-        marker: "# {mark} ANSIBLE CUSTOM CONFIG"
-        block: |
-          define('_PS_SSL_PORT_', 443);
-          define('_PS_CACHING_SYSTEM_', 'CacheFs');
-      when: ansible_facts['os_family'] == "Ubuntu"
+    

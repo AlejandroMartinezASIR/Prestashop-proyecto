@@ -8,12 +8,11 @@ db:
   pass: Usuario0?
 
 ip:
-  front1: "172.31.18.237"
-  front2: "172.31.18.104"
-  back: "172.31.16.185"
+  front1: "172.31.21.103"
+  front2: "172.31.28.205"
+  back: "172.31.21.103"
   net: "172.31.0.0/16"
   nfsserver: "172.31.26.4"
 
 prestashop:
   admin_password: "Usuario0?"  
-        
